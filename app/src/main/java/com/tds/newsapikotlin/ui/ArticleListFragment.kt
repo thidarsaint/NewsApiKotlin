@@ -60,6 +60,7 @@ class ArticleListFragment : Fragment() {
         })
 
         articleViewModel.getLoading().observe(this, Observer<Boolean> {isLoading ->
+            loadingView.visibility = (if(isLoading) View.VISIBLE else View.INVISIBLE)
             if(isLoading){
                 error_msg.visibility = View.GONE
                 recycler_article.visibility = View.GONE
