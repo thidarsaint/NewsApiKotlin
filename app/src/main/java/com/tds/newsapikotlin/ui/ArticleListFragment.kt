@@ -2,25 +2,31 @@ package com.tds.newsapikotlin.ui
 
 
 import android.os.Bundle
+import android.text.TextUtils
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.tds.dailynews.viewmodel.ArticleViewModel
 
 import com.tds.newsapikotlin.R
 import com.tds.newsapikotlin.adapter.ArticleAdapter
+import com.tds.newsapikotlin.model.Article
 import com.tds.newsapikotlin.model.ArticleResult
+import com.tds.newsapikotlin.viewmodel.SelectedArticleViewModel
 import kotlinx.android.synthetic.main.fragment_article_list.*
 
 /**
  * A simple [Fragment] subclass.
  */
-class ArticleListFragment : Fragment() {
+class ArticleListFragment : Fragment(), ArticleAdapter.ClickListener {
     private lateinit var articleAdapter : ArticleAdapter
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var articleViewModel: ArticleViewModel
@@ -39,6 +45,8 @@ class ArticleListFragment : Fragment() {
         articleAdapter = ArticleAdapter()
         recycler_article.adapter = articleAdapter
         recycler_article.layoutManager = viewManager
+
+        articleAdapter.setOnClickListener(this)
 
         observeViewModel()
     }
@@ -71,6 +79,17 @@ class ArticleListFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         articleViewModel.loadResults()
+    }
+
+    override fun onClick(article: Article) {
+        if (!TextUtils.isEmpty(article.url)){
+            val selectedArticleViewModel: SelectedArticleViewModel = ViewModelProviders.of(activity!!).get(SelectedArticleViewModel::class.java)
+            selectedArticleViewModel.selectedArticle(article)
+            activity!!.supportFragmentManager.beginTransaction()
+                .replace(R.id.screen_article, DetailsFragment())
+                .addToBackStack(null)           //replace fragment you want to go back
+                .commit()
+        }
     }
 
 
