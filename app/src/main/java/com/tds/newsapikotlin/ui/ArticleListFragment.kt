@@ -62,6 +62,12 @@ class ArticleListFragment : Fragment(), ArticleAdapter.ClickListener {
             if(isError) {
                 error_msg.visibility = View.VISIBLE
                 recycler_article.visibility = View.GONE
+
+                //swipe refresh when internet from disconnected to connect
+                swipeLayout.setOnRefreshListener {
+                    swipeLayout.isRefreshing = false
+                    articleViewModel.loadResults()
+                }
             }else{
                 error_msg.visibility = View.GONE
             }
